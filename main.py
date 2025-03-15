@@ -1,81 +1,82 @@
 import os
 import sys
-import time
 import subprocess
+import keyboard
+import shutil  # För att få terminalens bredd
 from colorama import Fore, Style, init
-
 
 # Initiera colorama
 init(autoreset=True)
 
+# Hämta den aktuella katalogen där main.py ligger
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-SCRIPT_PATH = r"C:\Users\fadiw\Ward\scripts"
+# Dynamiskt sätt att hitta scripts-mappen
+SCRIPT_PATH = os.path.join(BASE_DIR, "scripts")
 
 def clear_screen():
     """Rensa terminalen."""
     os.system('cls' if os.name == 'nt' else 'clear')
 
-def banner():
-    """Visa en statisk banner med en färg."""
-    font = fr"""{Fore.MAGENTA}
-           .---.                                          ,---,       ,----..    
-          /. ./|                        ,---,          ,`--.' |      /   /   \   
-      .--'.  ' ;             __  ,-.  ,---.'|         /    /  :     /   .     :  
-     /__./ \ : |           ,' ,'/ /|  |   | :        :    |.' '    .   /   ;.  \ 
- .--'.  '   ' .  ,--.--.  '  | |' |  |   | |        `----':  |   .   ;   /  ` ; 
-/___/ \ |    ' ' /       \\ |  |   ,',--.__| |           '   ' ;   ;   |  ; \ ; | 
-;   \  \;      :.--.  .-. |'  :  / /   ,'   |           |   | |   |   :  | ; | ' 
- \   ;  `      | \__\/: . .|  | ' .   '  /  |           '   : ;   .   |  ' ' ' : 
-  .   \    .\  ; ," .--.; |;  : | '   ; |:  |           |   | '   '   ;  \; /  | 
-   \   \   ' \ |/  /  ,.  ||  , ; |   | '/  '           '   : | ___\   \  ',  /  
-    :   '  |--";  :   .'   \---'  |   :    :|           ;   |.'/  .\;   :    /   
-     \   \ ;   |  ,     .-./       \   \  /             '---'  \_ ; |\   \ .'    
-      '---"     `--`---'            `----'                     /  ,"  `---`      
-                                                              '--'               
-    {Fore.CYAN}"""
+def center_text(text):
+    """Centrera en text baserat på terminalbredden."""
+    width = shutil.get_terminal_size().columns
+    return text.center(width)
 
-    # Visa bannern och vänta tills användaren trycker på en tangent innan vi fortsätter
-    print(font)
+def banner():
+    """Visa en centrerad banner."""
+    clear_screen()
+    print(Fore.MAGENTA + center_text("────── WARD 1.0 ──────\n"))
+    print(Fore.YELLOW + center_text("─" * 50))
+    print(Fore.CYAN + center_text("Välj ett alternativ"))
+    print(Fore.YELLOW + center_text("─" * 50))
+    print("\n")
+    print(Fore.GREEN + center_text("[1] ➤ Starta TextFinder"))
+    print(Fore.BLUE + center_text("[2] ➤ Starta TextGrabber"))
+    print(Fore.RED + center_text("[3] ➤ Avsluta programmet"))
+    print("\n")
+    print(Fore.YELLOW + center_text("─" * 50))
 
 def visa_huvudmeny():
-    """Visa huvudmenyn."""
+    """Visa huvudmenyn och låt användaren välja genom att trycka på en knapp."""
     while True:
-        # Visa huvudmeny efter bannern utan att rensa skärmen
-        print("\n🎯 Välkommen till CLI-huvudmenyn 🎯")
-        print("1. Starta TextFinder (söka text i filer)")
-        print("2. Starta TextGrabber (extrahera eller manipulera text från bilder)")
-        print("3. Avsluta programmet")
+        banner()
+        print("\n" + Fore.WHITE + center_text("Tryck [1], [2] eller [3] för att välja:"))
 
-        val = input("\nVälj ett alternativ (1-3): ")
-
-        if val == "1":
-            kör_textfinder()
-        elif val == "2":
-            kör_textgrabber()
-        elif val == "3":
-            print("👋 Avslutar programmet. Hej då!")
-            sys.exit(0)
-        else:
-            print("❌ Ogiltigt val. Försök igen.")
+        while True:
+            event = keyboard.read_event(suppress=True)  # Väntar på en tangent och dämpar utskrift
+            if event.event_type == keyboard.KEY_DOWN:
+                if event.name == "1":
+                    kör_textfinder()
+                    break
+                elif event.name == "2":
+                    kör_textgrabber()
+                    break
+                elif event.name == "3":
+                    print(Fore.RED + center_text("👋 Avslutar programmet. Hej då!"))
+                    sys.exit(0)
 
 def kör_textfinder():
     """Kör TextFinder."""
-    try:
-        print("\n🔍 Startar TextFinder...")
-        subprocess.run(["python", os.path.join(SCRIPT_PATH, "textfinder.py")])
-    except KeyboardInterrupt:
-        print("\n🚪 Återvänder till huvudmenyn...")
-    input("\nTryck på Enter för att återgå till huvudmenyn...")
+    script = os.path.join(SCRIPT_PATH, "textfinder.py")
+    if os.path.exists(script):
+        print("\n" + Fore.GREEN + center_text("🔍 Startar TextFinder..."))
+        subprocess.run(["python", script])
+    else:
+        print(Fore.RED + center_text(f"❌ Hittade inte {script}!"))
+
+    input("\n" + Fore.WHITE + center_text("Tryck på Enter för att återgå till huvudmenyn..."))
 
 def kör_textgrabber():
     """Kör TextGrabber."""
-    try:
-        print("\n📂 Startar TextGrabber...")
-        subprocess.run(["python", os.path.join(SCRIPT_PATH, "textgrabber.py")])
-    except KeyboardInterrupt:
-        print("\n🚪 Återvänder till huvudmenyn...")
-    input("\nTryck på Enter för att återgå till huvudmenyn...")
+    script = os.path.join(SCRIPT_PATH, "textgrabber.py")
+    if os.path.exists(script):
+        print("\n" + Fore.BLUE + center_text("📂 Startar TextGrabber..."))
+        subprocess.run(["python", script])
+    else:
+        print(Fore.RED + center_text(f"❌ Hittade inte {script}!"))
+
+    input("\n" + Fore.WHITE + center_text("Tryck på Enter för att återgå till huvudmenyn..."))
 
 if __name__ == "__main__":
-    banner()  # Visa den statiska bannern med en färg
-    visa_huvudmeny()  # Ladda huvudmenyn
+    visa_huvudmeny()
