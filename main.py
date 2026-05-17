@@ -127,7 +127,7 @@ def discover_scripts() -> List[Dict[str, object]]:
 
 def print_banner(scripts: List[Dict[str, object]]) -> None:
     clear_screen()
-    print(Fore.MAGENTA + center_text("────── WARD 1.0 ──────\n"))
+    print(Fore.MAGENTA + center_text("────── WARD 2.0 ──────\n"))
     print(Fore.YELLOW + center_text("─" * 50))
     print(Fore.CYAN + center_text("Välj ett skript att köra"))
     print(Fore.YELLOW + center_text("─" * 50))
