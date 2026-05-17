@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 import sys
 import tkinter as tk
 from tkinter import filedialog
@@ -7,7 +8,21 @@ from PIL import Image
 import pytesseract
 
 # Ange sökvägen till tesseract om den inte finns i systemets PATH
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"  # Justera detta efter din installation
+DEFAULT_TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+
+def get_tesseract_path():
+    if os.path.exists(DEFAULT_TESSERACT_PATH):
+        return DEFAULT_TESSERACT_PATH
+
+    found = shutil.which("tesseract") or shutil.which("tesseract.exe")
+    return found
+
+
+tesseract_path = get_tesseract_path()
+if tesseract_path:
+    pytesseract.pytesseract.tesseract_cmd = tesseract_path
+
 
 # Class for textgrabber
 class textgrabber:
@@ -40,6 +55,11 @@ class textgrabber:
 
     def extract_text_from_image(self, bildfil):
         """Extrahera text från en bildfil med hjälp av pytesseract."""
+        if not getattr(pytesseract.pytesseract, 'tesseract_cmd', None) or not os.path.exists(pytesseract.pytesseract.tesseract_cmd):
+            print("Fel: Tesseract är inte installerat eller hittades inte på systemet.")
+            print("Installera Tesseract OCR och se till att 'tesseract.exe' finns i PATH eller uppdatera sökvägen i textGrabber.py.")
+            sys.exit(1)
+
         try:
             # Öppna bilden med Pillow
             image = Image.open(bildfil)
