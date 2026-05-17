@@ -8,7 +8,7 @@ class textfinder:
     def __init__(self):
         # Skapa en parser för att hantera argumenten
         self.parser = argparse.ArgumentParser(
-            prog="textfinder",
+            prog="text_finder",
             description="CLI verktyg för att söka i filer",
         )
 

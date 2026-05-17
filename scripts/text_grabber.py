@@ -29,7 +29,7 @@ class textgrabber:
     def __init__(self):
         # Skapa en parser för att hantera argumenten
         self.parser = argparse.ArgumentParser(
-            prog="textgrabber",
+            prog="text_grabber",
             description="CLI verktyg för att extrahera text från bilder",
         )
 
@@ -57,7 +57,7 @@ class textgrabber:
         """Extrahera text från en bildfil med hjälp av pytesseract."""
         if not getattr(pytesseract.pytesseract, 'tesseract_cmd', None) or not os.path.exists(pytesseract.pytesseract.tesseract_cmd):
             print("Fel: Tesseract är inte installerat eller hittades inte på systemet.")
-            print("Installera Tesseract OCR och se till att 'tesseract.exe' finns i PATH eller uppdatera sökvägen i textGrabber.py.")
+            print("Installera Tesseract OCR och se till att 'tesseract.exe' finns i PATH eller uppdatera sökvägen i text_grabber.py.")
             sys.exit(1)
 
         try:
